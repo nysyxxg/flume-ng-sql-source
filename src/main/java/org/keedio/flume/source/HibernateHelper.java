@@ -1,5 +1,6 @@
 package org.keedio.flume.source;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,8 +47,21 @@ public class HibernateHelper {
 		/* check for mandatory propertis */
 		sqlSourceHelper.checkMandatoryProperties();
 
-		Map<String,String> hibernateProperties = context.getSubProperties("hibernate.");
-		Iterator<Map.Entry<String,String>> it = hibernateProperties.entrySet().iterator();
+//		Map<String,String> hibernateProperties = context.getSubProperties("hibernate.");
+//		Iterator<Map.Entry<String,String>> it = hibernateProperties.entrySet().iterator();
+
+		Iterator<Map.Entry<String, String>> it = null;
+		try {
+			//  ImmutableMap<String, String>  mapObj = context.getSubProperties("hibernate.");
+			// 使用反射 ， 为了适配多个平台
+			Method getSubPropertiesMethod = Context.class.getMethod("getSubProperties", String.class);
+			Object mapObj = getSubPropertiesMethod.invoke(context, "hibernate.");
+			if (mapObj instanceof Map) {
+				it = ((Map<String, String>) mapObj).entrySet().iterator();
+			}
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
 		
 		config = new Configuration();
 		Map.Entry<String, String> e;
