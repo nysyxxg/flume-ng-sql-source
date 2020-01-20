@@ -1,0 +1,2 @@
+#从mysql 拉去数据到日志输出------------
+bin/flume-ng agent --conf conf/ --name a1 --conf-file /tmp/flume-job/mysql.conf -Dflume.root.logger=INFO,console
